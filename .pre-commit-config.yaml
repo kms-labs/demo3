@@ -1,0 +1,96 @@
+default_stages: [pre-commit, pre-push]
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-yaml
+        exclude: |
+          (?x)^(
+              gitleaks.toml|
+              path/to/file2.py
+          )$
+      - id: check-json
+      - id: check-toml
+      - id: check-xml
+      # - id: detect-aws-credentials
+      - id: detect-private-key
+      - id: trailing-whitespace
+      - id: check-merge-conflict
+      - id: check-symlinks
+      # - id: end-of-file-fixer
+      # - id: mixed-line-ending
+  - repo: https://github.com/zricethezav/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+        name: gitleaks
+  # -   repo: https://github.com/Yelp/detect-secrets
+  #     rev: v1.2.0
+  #     hooks:
+  #     -   id: detect-secrets
+  #         name: Yelp/detect-secrets
+  # -   repo: https://github.com/antonbabenko/pre-commit-terraform
+  #     rev: v1.75.0
+  #     hooks:
+  #     -   id: terraform_validate
+  #         name: terraform-validate
+  #     -   id: terraform_tflint
+  #         name: terraform-tflint
+  #     -   id: terraform_tflint
+  #         name: terraform-tflint
+  #     -   id: terraform_tfsec
+  #         name: terraform-tfsec
+  #     -   id: terragrunt_validate
+  #         name: terragrunt-validate
+  #     -   id: checkov
+  #         name: checkov
+  #     -   id: terraform_checkov
+  #         name: terraform-checkov
+  #     -   id: terrascan
+  #         name: terrascan
+  # -   repo: https://github.com/aquasecurity/tfsec
+  #     rev: v1.28.0
+  #     hooks:
+  #     -   id: tfsec
+  #         name: tfsec
+  #     -   id: tfsec-docker
+  #         name: tfsec-docker
+  #     -   id: tfsec-system
+  #         name: tfsec-system
+  # -   repo: https://github.com/ansible-community/ansible-lint
+  #     rev: v6.7.0
+  #     hooks:
+  #     -   id: ansible-lint
+  #         name: ansible-lint
+  # -   repo: https://github.com/adrienverge/yamllint
+  #     rev: v1.28.0
+  #     hooks:
+  #     -   id: yamllint
+  #         name: yamllint
+  - repo: https://github.com/Riverside-Healthcare/djLint
+    rev: v1.36.3
+    hooks:
+      - id: djlint-jinja
+        name: djlint-jinja
+      - id: djlint-golang
+        name: djlint-golang
+  - repo: https://github.com/jorisroovers/gitlint
+    rev: v0.19.1
+    hooks:
+      - id: gitlint
+        name: gitlint
+  # -   repo: https://github.com/markdownlint/markdownlint
+  #     rev: v0.11.0
+  #     hooks:
+  #     -   id: markdownlint
+  #         name: markdownlint
+  - repo: local
+    hooks:
+      - id: trufflehog
+        name: trufflehog
+        description: Detect secrets
+        entry: bash -c 'trufflehog git file://. --since-commit HEAD --only-verified --fail --no-update'
+        # For running trufflehog in docker, use the following entry instead:
+        # entry: bash -c 'docker run --rm -v "$(pwd):/workdir" -i --rm trufflesecurity/trufflehog:latest git file:///workdir --since-commit HEAD --only-verified --fail'
+        language: system
+        stages: ["pre-commit", "pre-push"]
